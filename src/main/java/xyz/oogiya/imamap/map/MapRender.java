@@ -19,6 +19,9 @@ import xyz.oogiya.imamap.tasks.MapUpdateTask;
 import xyz.oogiya.imamap.util.Render;
 import xyz.oogiya.imamap.util.Utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MapRender {
 
     private final MapSettings mapSettings;
@@ -31,7 +34,6 @@ public class MapRender {
 
     private final NativeImage bufferedImage;
 
-
     //TODO
     private void drawCoordinates() {}
 
@@ -42,7 +44,7 @@ public class MapRender {
 
     public MapRender(MapSettings mapSettings) {
         this.mapSettings = mapSettings;
-        this.bufferedImage = new NativeImage(NativeImage.PixelFormat.RGBA, Utils.MAP_SIZE, Utils.MAP_SIZE, true);
+        this.bufferedImage = new NativeImage(NativeImage.PixelFormat.RGBA, 128 / Utils.ZOOM_LEVEL, 128 / Utils.ZOOM_LEVEL, true);
         this.backgroundExecutor = new BackgroundExecutor();
     }
 
@@ -115,10 +117,9 @@ public class MapRender {
     }
 
     public void updateTexture() {
-
-        for (int i = 0; i < Utils.MAP_SIZE; i++) {
-            for (int j = 0; j < Utils.MAP_SIZE; j++) {
-                int p = this.colorBytes[i + j * Utils.MAP_SIZE] & 255;
+        for (int i = 0; i < this.bufferedImage.getWidth(); i++) {
+            for (int j =0; j < this.bufferedImage.getHeight(); j++) {
+                int p = this.colorBytes[i + j * this.bufferedImage.getHeight()] & 255;
 
                 if (p / 4 == 0) {
                     this.bufferedImage.setPixelRGBA(i, j, ((i + j) + (i + j)/ Utils.MAP_SIZE & 1) * 8 + 16 << 24);
@@ -133,7 +134,7 @@ public class MapRender {
         int playerX = (int)Math.round(this.mapSettings.getPlayerX());
         int playerZ = (int)Math.round(this.mapSettings.getPlayerZ());
 
-        int mapSize = Utils.MAP_SIZE;
+        int mapSize = (this.bufferedImage.getHeight() + this.bufferedImage.getWidth()) / 2;
         World world = this.mapSettings.getMinecraft().world;
 
 
@@ -161,7 +162,7 @@ public class MapRender {
                                 ((playerZ + j - (mapSize/2)) & 15));
                         if (highestBlock > 1) {
 
-                            while (highestBlock > 0 && highestBlock < mapSize) {
+                            while (highestBlock > 0 && highestBlock < 128) {
                                 blockState = chunk.getBlockState(blockPos.setPos(((playerX + i - (mapSize/2)) & 15),
                                         highestBlock, ((playerZ + j - (mapSize/2)) & 15)));
 
@@ -176,7 +177,7 @@ public class MapRender {
                         }
                     }
 
-                    this.colorBytes[i + j * Utils.MAP_SIZE] = (byte)(blockState.getMaterialColor(this.mapSettings.getMinecraft().world, blockPos).colorIndex * 4);
+                    this.colorBytes[i + j * this.bufferedImage.getHeight()] = (byte)(blockState.getMaterialColor(this.mapSettings.getMinecraft().world, blockPos).colorIndex * 4);
                 }
             }
         }

@@ -10,7 +10,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.Heightmap;
 
 
-public class ChunkPlus {
+public class ChunkPlus extends Chunk {
 
     private final Chunk chunk;
     private byte[] chunkPixels = new byte[16*16];
@@ -18,6 +18,7 @@ public class ChunkPlus {
     private Long chunkKey;
 
     public ChunkPlus(Chunk chunk) {
+        super(chunk.getWorld(), chunk.getPos(), chunk.getBiomes());
         this.chunk = chunk;
         this.world = Minecraft.getInstance().world;
         createChunkKey();
@@ -50,5 +51,7 @@ public class ChunkPlus {
             }
         }
     }
+    public byte[] getChunkPixels() { return this.chunkPixels; }
 
+    public Long getChunkKey() { return this.chunkKey; }
 }

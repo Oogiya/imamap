@@ -15,6 +15,8 @@ public class Utils {
     public static final int MAP_SIZE = 1 << SHIFT; //pixels!
     public static final int CHUNK_AMOUNT = 9;
 
+    public static final int ZOOM_LEVEL = 2;
+
     //Map Size (visual)
     public static final int MAP_WIDTH = 50;
     public static final int MAP_HEIGHT = 50;
